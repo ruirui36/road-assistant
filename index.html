@@ -6,23 +6,100 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle fill='%23F8C86E' cx='50' cy='50' r='50'/%3E%3Ctext x='50' y='70' font-size='50' text-anchor='middle' fill='white'%3E🚶%3C/text%3E%3C/svg%3E">
-    <title>安心行 · 智能老年助手</title>
+    <title>安心行 · 老年助行助手</title>
     <style>
-        /* 样式与之前一致，此处省略（实际使用时完整保留） */
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        :root { --bg-color: #F8C86E; --card-bg: #ffffff; --text-color: #333; --btn-bg: #F8C86E; --btn-text: #333; }
-        body.dark { --bg-color: #2c3e2f; --card-bg: #3a4e3d; --text-color: #f5f5f5; --btn-bg: #d68b2c; --btn-text: white; }
-        body { background: var(--bg-color); color: var(--text-color); font-family: system-ui, 'Segoe UI', 'PingFang SC', Roboto, Helvetica, Arial, sans-serif; transition: background 0.3s; padding: 0; margin: 0; }
-        .grid-main { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; height: 100vh; gap: 2px; background: #b87c3a; }
-        .main-block { background: var(--card-bg); display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: 0.1s; font-size: 28px; font-weight: bold; text-align: center; padding: 20px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        :root {
+            --bg-color: #F8C86E;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --btn-bg: #F8C86E;
+            --btn-text: #333;
+        }
+        body.dark {
+            --bg-color: #2c3e2f;
+            --card-bg: #3a4e3d;
+            --text-color: #f5f5f5;
+            --btn-bg: #d68b2c;
+            --btn-text: white;
+        }
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: system-ui, 'Segoe UI', 'PingFang SC', Roboto, Helvetica, Arial, sans-serif;
+            transition: background 0.3s;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+        }
+        /* 四大模块网格 */
+        .grid-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            height: 100vh;
+            gap: 2px;
+            background: #b87c3a;
+        }
+        .main-block {
+            background: var(--card-bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.1s;
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+        }
         .main-block:active { transform: scale(0.98); }
         .main-block .icon { font-size: 64px; margin-bottom: 16px; }
         .main-block.settings { background: #f2e0c0; }
         body.dark .main-block.settings { background: #5a6e55; }
-        .page { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-color); overflow-y: auto; padding: 20px; z-index: 10; }
+
+        /* 页面容器 */
+        .page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-color);
+            overflow-y: auto;
+            padding: 20px;
+            z-index: 10;
+        }
         .page.active { display: block; }
-        .back-btn { background: var(--btn-bg); border: none; border-radius: 40px; padding: 12px 24px; font-size: 24px; font-weight: bold; color: var(--btn-text); margin-bottom: 20px; cursor: pointer; }
-        .list-item { background: var(--card-bg); border-radius: 40px; padding: 20px; margin-bottom: 16px; font-size: 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .back-btn {
+            background: var(--btn-bg);
+            border: none;
+            border-radius: 40px;
+            padding: 12px 24px;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--btn-text);
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        .list-item {
+            background: var(--card-bg);
+            border-radius: 40px;
+            padding: 20px;
+            margin-bottom: 16px;
+            font-size: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
         .slider { width: 100%; margin: 12px 0; }
         .voice-option { display: flex; gap: 20px; margin: 12px 0; }
         .voice-option button { flex: 1; padding: 16px; border-radius: 40px; border: none; background: var(--btn-bg); font-size: 24px; }
@@ -30,161 +107,350 @@
         .map-container { width: 100%; height: 300px; background: #ccc; border-radius: 40px; margin: 12px 0; overflow: hidden; }
         .camera-container { width: 100%; height: 200px; background: black; border-radius: 40px; margin: 12px 0; position: relative; overflow: hidden; }
         video { width: 100%; height: 100%; object-fit: cover; }
-        .ai-msg { background: var(--card-bg); border-radius: 40px; padding: 20px; margin: 12px 0; font-size: 24px; text-align: center; }
-        button { background: var(--btn-bg); border: none; border-radius: 40px; padding: 12px 20px; font-size: 24px; color: var(--btn-text); cursor: pointer; }
+        .ai-msg {
+            background: var(--card-bg);
+            border-radius: 40px;
+            padding: 20px;
+            margin: 12px 0;
+            font-size: 24px;
+            text-align: center;
+        }
+        button {
+            background: var(--btn-bg);
+            border: none;
+            border-radius: 40px;
+            padding: 12px 20px;
+            font-size: 24px;
+            color: var(--btn-text);
+            cursor: pointer;
+        }
         .flex { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
         .flex button { flex: 1; }
         .danger-btn { background: #e63946; color: white; }
-        .disclaimer-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 10000; display: flex; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(4px); }
-        .disclaimer-card { background: white; border-radius: 48px; max-width: 600px; width: 100%; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; }
-        .disclaimer-header { background: #F8C86E; padding: 20px; text-align: center; font-size: 28px; font-weight: bold; }
-        .disclaimer-content { flex: 1; overflow-y: auto; padding: 20px; font-size: 18px; line-height: 1.5; }
-        .disclaimer-footer { padding: 20px; display: flex; gap: 16px; }
-        .disclaimer-footer button { flex: 1; padding: 14px; border-radius: 40px; font-size: 20px; font-weight: bold; }
+
+        /* 免责声明遮罩层 */
+        .disclaimer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+        .disclaimer-card {
+            background: white;
+            border-radius: 48px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .disclaimer-header {
+            background: #F8C86E;
+            padding: 20px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .disclaimer-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+        .disclaimer-footer {
+            padding: 20px;
+            display: flex;
+            gap: 16px;
+        }
+        .disclaimer-footer button {
+            flex: 1;
+            padding: 14px;
+            border-radius: 40px;
+            font-size: 20px;
+            font-weight: bold;
+        }
         .btn-agree { background: #4caf50; color: white; }
         .btn-reject { background: #f44336; color: white; }
     </style>
 </head>
 <body>
 
-<!-- 免责声明遮罩层（与之前相同，此处省略，实际需完整保留） -->
-<div id="disclaimerOverlay" class="disclaimer-overlay">...</div>
+<!-- 免责声明遮罩层 -->
+<div id="disclaimerOverlay" class="disclaimer-overlay">
+    <div class="disclaimer-card">
+        <div class="disclaimer-header">📜 老年安心寻路软件 免责声明</div>
+        <div class="disclaimer-content">
+            <p>欢迎使用本软件，本软件专为老年用户设计，提供便捷寻路、智能导航、安全求助等适老化出行服务。在使用本软件前，请您务必仔细阅读并充分理解本免责声明。</p>
+            <p><strong>一、服务功能与第三方平台声明</strong><br>
+            1. 本软件地图导航服务基于高德开放平台API接口实现，路线规划、位置定位、周边地点检索等功能均依托高德开放平台现有数据与服务能力，不对地图数据的实时性、绝对准确性、完整性作出任何明示或暗示的保证。<br>
+            2. 本软件实时路面监控功能依托百度智能云平台技术支持，监控画面传输、数据处理受手机设备性能、网络信号、环境光线等多重因素影响，可能出现延迟、卡顿或中断，用户不可完全依赖监控画面判断路况。<br>
+            3. 本软件所有功能均为辅助出行工具，无法替代人工陪护、专业路况指引与紧急救援服务，用户需结合实际情况自主判断出行安全。</p>
+            <p><strong>二、用户责任与风险提示</strong><br>
+            用户在使用本软件出行过程中，需严格遵守交通规则，对自身出行安全负全部责任；因过度依赖软件功能忽视实际路况导致的意外，由用户自行承担后果。</p>
+            <p><strong>三、其他条款</strong><br>
+            本软件保留对本免责声明的最终解释权，若您对本声明内容有异议，请立即停止使用本软件。</p>
+            <p>请老年用户在家人陪同下阅读本声明，确保充分理解所有条款后再使用本软件，出行时务必注意安全，谨慎依赖软件功能。</p>
+        </div>
+        <div class="disclaimer-footer">
+            <button class="btn-reject" id="rejectDisclaimer">拒绝</button>
+            <button class="btn-agree" id="agreeDisclaimer">同意并继续</button>
+        </div>
+    </div>
+</div>
+
 <div id="appContainer" style="display: none;">
-    <!-- 四大模块等页面内容与之前完全一致，但为了节省篇幅，此处省略（实际使用时必须包含所有页面结构） -->
-    <!-- 注意：需要在底部添加 AI 助手专属的聊天界面吗？我们直接在“问题”页面的“呼叫AI助手”中实现全语音交互，不需要额外界面 -->
+    <!-- 四大模块主界面 -->
+    <div class="grid-main" id="mainMenu">
+        <div class="main-block settings" data-page="settings">
+            <div class="icon">⚙️</div>
+            <div>设置</div>
+        </div>
+        <div class="main-block" data-page="travel">
+            <div class="icon">🚶</div>
+            <div>出游</div>
+        </div>
+        <div class="main-block" data-page="problem">
+            <div class="icon">❓</div>
+            <div>问题</div>
+        </div>
+        <div class="main-block" data-page="other">
+            <div class="icon">📱</div>
+            <div>其他</div>
+        </div>
+    </div>
+
+    <!-- 设置页面 -->
+    <div id="settingsPage" class="page">
+        <button class="back-btn" data-back="main">← 返回</button>
+        <div class="list-item" data-subpage="voice">🔊 声音</div>
+        <div class="list-item" data-subpage="font">🔠 字体</div>
+        <div class="list-item" data-subpage="color">🎨 颜色</div>
+        <div class="list-item" data-subpage="safety">🛡️ 安全</div>
+        <div class="list-item" data-subpage="memo">📝 帮助与建议</div>
+    </div>
+
+    <!-- 声音子页面 -->
+    <div id="voicePage" class="page">
+        <button class="back-btn" data-back="settings">← 返回</button>
+        <div>音量（20-80）</div>
+        <input type="range" id="volumeSlider" min="20" max="80" value="60" class="slider">
+        <div>播报声音</div>
+        <div class="voice-option">
+            <button id="voiceFemale">温柔女声</button>
+            <button id="voiceMale">温柔男声</button>
+        </div>
+    </div>
+
+    <!-- 字体子页面 -->
+    <div id="fontPage" class="page">
+        <button class="back-btn" data-back="settings">← 返回</button>
+        <div>字体大小（24-50px）</div>
+        <input type="range" id="fontSlider" min="24" max="50" value="32" class="slider">
+        <div id="fontPreview" style="margin-top: 20px;">预览文字：安心出行</div>
+    </div>
+
+    <!-- 颜色子页面（夜间模式） -->
+    <div id="colorPage" class="page">
+        <button class="back-btn" data-back="settings">← 返回</button>
+        <div>夜间模式</div>
+        <button id="toggleNightMode">🌙 开启/关闭</button>
+    </div>
+
+    <!-- 安全子页面（紧急电话） -->
+    <div id="safetyPage" class="page">
+        <button class="back-btn" data-back="settings">← 返回</button>
+        <div class="flex">
+            <button class="danger-btn" id="callPolice">🚔 报警 110</button>
+            <button class="danger-btn" id="callFire">🔥 救火 119</button>
+            <button class="danger-btn" id="callAmbulance">🚑 救护车 120</button>
+        </div>
+    </div>
+
+    <!-- 备忘录子页面 -->
+    <div id="memoPage" class="page">
+        <button class="back-btn" data-back="settings">← 返回</button>
+        <div>📝 备忘录（可记录待办事项）</div>
+        <textarea id="memoText" rows="5" placeholder="例如：今天买土豆、番茄"></textarea>
+        <button id="saveMemo">保存</button>
+    </div>
+
+    <!-- 出游页面 -->
+    <div id="travelPage" class="page">
+        <button class="back-btn" data-back="main">← 返回</button>
+        <div class="list-item" data-subpage="park">🌳 公园</div>
+        <div class="list-item" data-subpage="nearby">📍 附近</div>
+        <div class="list-item" data-subpage="bus">🚌 公交</div>
+    </div>
+
+    <!-- 公园出游子页面 -->
+    <div id="parkPage" class="page">
+        <button class="back-btn" data-back="travel">← 返回</button>
+        <div id="parkMap" class="map-container"></div>
+        <div id="parkCamera" class="camera-container" style="display:none;">
+            <video id="parkVideo" autoplay playsinline muted></video>
+        </div>
+        <div id="parkAI" class="ai-msg">正在寻找最近的公园...</div>
+        <button id="startParkNav">开始导航</button>
+        <button id="stopParkNav">停止导航</button>
+    </div>
+
+    <!-- 附近出游子页面（含分类选项） -->
+    <div id="nearbyPage" class="page">
+        <button class="back-btn" data-back="travel">← 返回</button>
+        <div id="nearbyCategories" class="flex"></div>
+        <div id="nearbyMap" class="map-container"></div>
+        <div id="nearbyCamera" class="camera-container" style="display:none;">
+            <video id="nearbyVideo" autoplay playsinline muted></video>
+        </div>
+        <div id="nearbyAI" class="ai-msg">请选择一个地点</div>
+        <button id="startNearbyNav">开始导航</button>
+        <button id="stopNearbyNav">停止导航</button>
+    </div>
+
+    <!-- 公交出游子页面（四种模式） -->
+    <div id="busPage" class="page">
+        <button class="back-btn" data-back="travel">← 返回</button>
+        <div class="flex">
+            <button id="subwayBtn">🚇 地铁</button>
+            <button id="busBtn">🚌 公交车</button>
+            <button id="bikeBtn">🚲 骑行</button>
+            <button id="walkBtn">🚶 步行</button>
+        </div>
+        <div id="busMap" class="map-container"></div>
+        <div id="busCamera" class="camera-container" style="display:none;">
+            <video id="busVideo" autoplay playsinline muted></video>
+        </div>
+        <div id="busAI" class="ai-msg">请选择出行方式</div>
+        <button id="startBusNav">开始导航</button>
+        <button id="stopBusNav">停止导航</button>
+    </div>
+
+    <!-- 问题页面（无AI，提供帮助指引） -->
+    <div id="problemPage" class="page">
+        <button class="back-btn" data-back="main">← 返回</button>
+        <div class="list-item" data-problem="nav">🧭 导航不会用</div>
+        <div class="list-item" data-problem="location">📍 定位不准</div>
+        <div class="list-item" data-problem="voice">🔊 声音太小/没声音</div>
+        <div class="list-item" data-problem="home">🏠 找不到家/医院</div>
+    </div>
+
+    <!-- 其他页面 -->
+    <div id="otherPage" class="page">
+        <button class="back-btn" data-back="main">← 返回</button>
+        <div class="list-item" data-other="about">📖 关于我们</div>
+        <div class="list-item" data-other="help">📚 使用说明</div>
+        <div class="list-item" data-other="version">🔢 版本信息</div>
+        <div class="list-item" data-other="feedback">💬 意见反馈</div>
+        <div class="list-item" data-other="share">👨‍👩‍👧 分享给家人</div>
+        <div class="list-item" data-other="privacy">🔒 隐私说明</div>
+    </div>
 </div>
 
 <script>
-    // ==================== API 密钥（请替换） ====================
-    const AMAP_KEY = "	8a7b71a39524584f8e9d5a00d695b5f8";
-    const BAIDU_API_KEY = "kglC5NXFftpXpQDA52m2uPnB";
+    // ==================== 请替换您的 API 密钥 ====================
+    const AMAP_KEY = "8a7b71a39524584f8e9d5a00d695b5f8";
+    const BAIDU_API_KEY = "8a7b71a39524584f8e9d5a00d695b5f8";
     const BAIDU_SECRET_KEY = "Y7pJPid83DCGig83SUrkJpgQcPyDbXtG";
-    const DEEPSEEK_API_KEY = "sk-7723c960624643de8bdea6d062bd7b90";  // 新增：DeepSeek API Key
     // ===========================================================
 
-    // 全局变量（原有）
-    let currentLocation = null, currentAddress = "", isNavigating = false, currentDestination = null;
-    let voiceVolume = 60, voiceGender = "female", fontSize = 32, nightMode = false;
+    // 全局变量
+    let currentLocation = null;
+    let currentAddress = "未知位置";
+    let isNavigating = false;
+    let currentDestination = null;
+    let navSteps = [];
+    let navIndex = 0;
+    let voiceVolume = 60;
+    let voiceGender = "female";
+    let fontSize = 32;
+    let nightMode = false;
+    let memoContent = "";
     let speechSynthesis = window.speechSynthesis;
     let currentUtterance = null;
+    let cameraTimer = null;
+    let cameraStream = null;
 
-    // AI 对话上下文（保留最近5条）
-    let conversationHistory = [];
-
-    // 系统提示（角色设定）
-    const SYSTEM_PROMPT = `你是一个老年出行助手，名字叫小安，语气温柔耐心，帮助老人规划路线、解答问题。
-当用户表达想去某地时，你需要用特定格式输出导航指令，格式为：[NAVIGATE:目的地名称]。
-例如：用户说“我想去最近的超市”，你回复：“好的，我帮您找附近的超市。[NAVIGATE:超市]”
-如果用户没有说具体地点，你可以询问：“您想去哪里呢？”
-其他日常问题正常回答。`;
-
-    // 调用 DeepSeek API 获取回复
-    async function callDeepSeek(userMessage) {
-        // 构建消息历史（保留最近5轮，节约token）
-        let messages = [
-            { role: "system", content: SYSTEM_PROMPT },
-            ...conversationHistory.slice(-5),
-            { role: "user", content: userMessage }
-        ];
-        const url = "https://api.deepseek.com/v1/chat/completions";
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${DEEPSEEK_API_KEY}`
-                },
-                body: JSON.stringify({
-                    model: "deepseek-chat",
-                    messages: messages,
-                    temperature: 0.7,
-                    max_tokens: 300
-                })
-            });
-            const data = await response.json();
-            if (data.choices && data.choices[0]) {
-                let reply = data.choices[0].message.content;
-                // 保存到历史
-                conversationHistory.push({ role: "user", content: userMessage });
-                conversationHistory.push({ role: "assistant", content: reply });
-                return reply;
-            } else {
-                console.error("DeepSeek返回错误", data);
-                return "抱歉，我现在有点忙，请稍后再试。";
-            }
-        } catch (err) {
-            console.error("DeepSeek调用失败", err);
-            return "网络连接有问题，请检查网络后重试。";
-        }
+    // 加载存储的设置
+    function loadSettings() {
+        let v = localStorage.getItem('voiceVolume');
+        if (v) voiceVolume = parseInt(v);
+        let g = localStorage.getItem('voiceGender');
+        if (g) voiceGender = g;
+        let f = localStorage.getItem('fontSize');
+        if (f) fontSize = parseInt(f);
+        let n = localStorage.getItem('nightMode');
+        if (n === 'true') nightMode = true;
+        let m = localStorage.getItem('memo');
+        if (m) memoContent = m;
+        if (document.getElementById('volumeSlider')) document.getElementById('volumeSlider').value = voiceVolume;
+        if (document.getElementById('fontSlider')) document.getElementById('fontSlider').value = fontSize;
+        if (nightMode) document.body.classList.add('dark');
+        if (document.getElementById('memoText')) document.getElementById('memoText').value = memoContent;
+        applyFontSize();
+    }
+    function saveSettings() {
+        localStorage.setItem('voiceVolume', voiceVolume);
+        localStorage.setItem('voiceGender', voiceGender);
+        localStorage.setItem('fontSize', fontSize);
+        localStorage.setItem('nightMode', nightMode);
+        if (document.getElementById('memoText')) localStorage.setItem('memo', document.getElementById('memoText').value);
+    }
+    function applyFontSize() {
+        document.querySelectorAll('.list-item, .main-block, .ai-msg, button:not(.back-btn), .slider, .voice-option button, textarea, .flex button, .danger-btn').forEach(el => {
+            el.style.fontSize = fontSize + 'px';
+        });
     }
 
-    // 解析回复中的导航指令
-    function parseNavigationCommand(reply) {
-        const match = reply.match(/\\[NAVIGATE:(.*?)\\]/);
-        if (match) {
-            let dest = match[1].trim();
-            return dest;
-        }
-        return null;
-    }
-
-    // 执行导航（根据目的地文本搜索并开始导航）
-    async function executeNavigation(destinationText) {
-        speak(`正在帮您查找${destinationText}`);
-        // 先尝试直接搜索周边
-        let place = await searchNearby(destinationText);
-        if (!place) {
-            // 如果没找到，尝试地理编码（用户可能输入具体地址）
-            let geo = await geocode(destinationText);
-            if (geo) place = geo;
-        }
-        if (place) {
-            startNavigation(place, 'walking');
+    // 语音播报
+    function speak(text, callback) {
+        if (!speechSynthesis) return;
+        if (currentUtterance) speechSynthesis.cancel();
+        let utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'zh-CN';
+        utterance.rate = 0.9;
+        utterance.volume = voiceVolume / 100;
+        let voices = speechSynthesis.getVoices();
+        let targetVoice = null;
+        if (voiceGender === 'female') {
+            targetVoice = voices.find(v => v.lang === 'zh-CN' && (v.name.includes('Tingting') || v.name.includes('女')));
         } else {
-            speak(`抱歉，没有找到${destinationText}，请换个说法试试`);
+            targetVoice = voices.find(v => v.lang === 'zh-CN' && (v.name.includes('Yunyang') || v.name.includes('男')));
         }
+        if (targetVoice) utterance.voice = targetVoice;
+        utterance.onend = () => { if (callback) callback(); };
+        speechSynthesis.speak(utterance);
+        currentUtterance = utterance;
     }
 
-    // 语音识别 + AI对话主流程
-    async function startAIDialog() {
-        speak("您好，我是小安，请问有什么可以帮您？");
-        // 开始语音识别
-        if (!('webkitSpeechRecognition' in window)) {
-            speak("您的浏览器不支持语音输入");
-            return;
-        }
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'zh-CN';
-        recognition.interimResults = false;
-        recognition.start();
-        recognition.onresult = async (event) => {
-            let userText = event.results[0][0].transcript;
-            speak("我听到了：" + userText);
-            // 调用DeepSeek
-            let aiReply = await callDeepSeek(userText);
-            // 检查是否有导航指令
-            let dest = parseNavigationCommand(aiReply);
-            if (dest) {
-                // 去除指令部分，只播报文本
-                let cleanReply = aiReply.replace(/\\[NAVIGATE:.*?\\]/, "").trim();
-                if (cleanReply) speak(cleanReply);
-                await executeNavigation(dest);
-            } else {
-                speak(aiReply);
+    // 获取当前位置（高德逆地理）
+    function getCurrentLocation(callback) {
+        if (currentLocation) { callback(currentLocation); return; }
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            let lng = pos.coords.longitude;
+            let lat = pos.coords.latitude;
+            currentLocation = { lng, lat };
+            let url = `https://restapi.amap.com/v3/geocode/regeo?location=${lng},${lat}&key=${AMAP_KEY}&output=json`;
+            let res = await fetch(url);
+            let data = await res.json();
+            if (data.status === '1' && data.regeocode) {
+                currentAddress = data.regeocode.formatted_address || "附近";
             }
-        };
-        recognition.onerror = () => {
-            speak("抱歉，我没听清楚，请再说一遍");
-        };
+            callback(currentLocation);
+        }, (err) => { speak("定位失败，请检查GPS权限"); callback(null); });
     }
 
-    // 以下是原有功能函数（保持不变，但需确保 searchNearby、geocode、startNavigation 等已定义）
-    // 由于篇幅，这里只列出函数签名，实际需完整保留之前版本的所有函数。
-    // 注意：需要补充 geocode 函数（地址转坐标）和 searchNearby 等。
-
-    // 示例：geocode（高德地理编码）
+    // 地址转坐标（地理编码）
     async function geocode(address) {
-        if (!currentLocation) await new Promise(resolve => getCurrentLocation(resolve));
         let url = `https://restapi.amap.com/v3/geocode/geo?address=${encodeURIComponent(address)}&key=${AMAP_KEY}&output=json`;
         let res = await fetch(url);
         let data = await res.json();
@@ -195,23 +461,264 @@
         return null;
     }
 
-    // 其他函数（getCurrentLocation, searchNearby, planRoute, startNavigation, speak, etc.）与之前相同，此处省略
-    // 实际使用时需完整粘贴之前的全部函数实现，避免功能缺失。
-
-    // 初始化时绑定“呼叫AI助手”按钮
-    function bindAIButton() {
-        const aiBtn = document.getElementById('callAI');
-        if (aiBtn) {
-            aiBtn.addEventListener('click', startAIDialog);
+    // 周边搜索
+    async function searchNearby(keyword) {
+        if (!currentLocation) await new Promise(resolve => getCurrentLocation(resolve));
+        let url = `https://restapi.amap.com/v3/place/around?key=${AMAP_KEY}&location=${currentLocation.lng},${currentLocation.lat}&keywords=${encodeURIComponent(keyword)}&radius=2000&output=json`;
+        let res = await fetch(url);
+        let data = await res.json();
+        if (data.status === '1' && data.pois && data.pois.length) {
+            let poi = data.pois[0];
+            return { name: poi.name, lng: parseFloat(poi.location.split(',')[0]), lat: parseFloat(poi.location.split(',')[1]) };
         }
+        return null;
     }
 
-    // 页面加载完成后调用
-    window.onload = () => {
-        // 免责声明逻辑（略）
-        // 初始化设置、定位等...
-        bindAIButton();
-    };
+    // 路径规划（步行/驾车/公交/骑行）
+    async function planRoute(destLng, destLat, mode = 'walking') {
+        let modeMap = { walking: 'walking', driving: 'driving', transit: 'transit', bicycling: 'bicycling' };
+        let modeParam = modeMap[mode] || 'walking';
+        let url = `https://restapi.amap.com/v3/direction/${modeParam}?origin=${currentLocation.lng},${currentLocation.lat}&destination=${destLng},${destLat}&key=${AMAP_KEY}&output=json`;
+        let res = await fetch(url);
+        let data = await res.json();
+        if (data.status === '1' && data.route && data.route.paths && data.route.paths.length) {
+            let path = data.route.paths[0];
+            let steps = path.steps.map(s => s.instruction.replace(/<[^>]+>/g, ''));
+            return { distance: path.distance, duration: path.duration, steps };
+        }
+        return null;
+    }
+
+    // 开始导航
+    async function startNavigation(dest, mode = 'walking') {
+        if (!currentLocation) await new Promise(resolve => getCurrentLocation(resolve));
+        let route = await planRoute(dest.lng, dest.lat, mode);
+        if (!route) {
+            speak("无法规划路线，请检查网络或地址");
+            return;
+        }
+        isNavigating = true;
+        currentDestination = dest;
+        navSteps = route.steps;
+        navIndex = 0;
+        speak(`开始导航到${dest.name}，全程约${(route.distance/1000).toFixed(1)}公里，预计${Math.round(route.duration/60)}分钟`);
+        function speakStep() {
+            if (!isNavigating || navIndex >= navSteps.length) {
+                if (navIndex >= navSteps.length) speak("您已到达目的地附近");
+                return;
+            }
+            let stepText = navSteps[navIndex];
+            speak(stepText, () => {
+                navIndex++;
+                setTimeout(() => speakStep(), 3000);
+            });
+        }
+        speakStep();
+        // 启动摄像头监控
+        startCameraMonitoring();
+    }
+
+    function stopNavigation() {
+        isNavigating = false;
+        if (cameraTimer) clearInterval(cameraTimer);
+        if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+        speak("导航已结束");
+    }
+
+    // 百度AI道路识别（实时监控）
+    async function getBaiduToken() {
+        let url = `https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=${BAIDU_API_KEY}&client_secret=${BAIDU_SECRET_KEY}`;
+        let res = await fetch(url);
+        let data = await res.json();
+        return data.access_token;
+    }
+    async function recognizeImage(base64, token) {
+        let url = `https://aip.baidubce.com/rest/2.0/image-classify/v1/object_detection?access_token=${token}`;
+        let body = `image=${encodeURIComponent(base64)}&with_face=0`;
+        let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body });
+        return await res.json();
+    }
+    async function startCameraMonitoring() {
+        let videoElem = document.querySelector('.camera-container video');
+        if (!videoElem) return;
+        if (!cameraStream) {
+            try {
+                let stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                videoElem.srcObject = stream;
+                cameraStream = stream;
+                await videoElem.play();
+            } catch(e) { console.error(e); return; }
+        }
+        if (cameraTimer) clearInterval(cameraTimer);
+        cameraTimer = setInterval(async () => {
+            if (!isNavigating) return;
+            let canvas = document.createElement('canvas');
+            canvas.width = videoElem.videoWidth;
+            canvas.height = videoElem.videoHeight;
+            let ctx = canvas.getContext('2d');
+            ctx.drawImage(videoElem, 0, 0, canvas.width, canvas.height);
+            let base64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+            let token = await getBaiduToken();
+            if (!token) return;
+            let result = await recognizeImage(base64, token);
+            if (result && result.result) {
+                let dangers = [];
+                let keywords = ["斑马线", "红绿灯", "汽车", "行人", "自行车"];
+                for (let item of result.result) {
+                    for (let kw of keywords) {
+                        if (item.keyword.includes(kw)) dangers.push(`注意${kw}`);
+                    }
+                }
+                if (dangers.length) speak(dangers.join("，") + "，请小心");
+            }
+        }, 5000);
+    }
+
+    // 页面路由
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId + 'Page').classList.add('active');
+    }
+
+    // 初始化事件绑定
+    function bindEvents() {
+        // 主菜单按钮
+        document.querySelectorAll('.main-block').forEach(block => {
+            block.addEventListener('click', () => showPage(block.dataset.page));
+        });
+        // 返回按钮
+        document.querySelectorAll('.back-btn').forEach(btn => {
+            btn.addEventListener('click', () => showPage(btn.dataset.back));
+        });
+        // 子页面入口
+        document.querySelectorAll('[data-subpage]').forEach(el => {
+            el.addEventListener('click', () => showPage(el.dataset.subpage));
+        });
+
+        // 声音设置
+        const volumeSlider = document.getElementById('volumeSlider');
+        if (volumeSlider) {
+            volumeSlider.addEventListener('input', (e) => { voiceVolume = e.target.value; saveSettings(); speak("音量已调节"); });
+        }
+        document.getElementById('voiceFemale')?.addEventListener('click', () => { voiceGender = 'female'; saveSettings(); speak("已切换为温柔女声"); });
+        document.getElementById('voiceMale')?.addEventListener('click', () => { voiceGender = 'male'; saveSettings(); speak("已切换为温柔男声"); });
+        // 字体
+        const fontSlider = document.getElementById('fontSlider');
+        if (fontSlider) {
+            fontSlider.addEventListener('input', (e) => { fontSize = e.target.value; applyFontSize(); saveSettings(); });
+        }
+        // 夜间模式
+        document.getElementById('toggleNightMode')?.addEventListener('click', () => {
+            nightMode = !nightMode;
+            if (nightMode) document.body.classList.add('dark');
+            else document.body.classList.remove('dark');
+            saveSettings();
+            speak(nightMode ? "夜间模式已开启" : "夜间模式已关闭");
+        });
+        // 紧急电话
+        document.getElementById('callPolice')?.addEventListener('click', () => window.location.href = 'tel:110');
+        document.getElementById('callFire')?.addEventListener('click', () => window.location.href = 'tel:119');
+        document.getElementById('callAmbulance')?.addEventListener('click', () => window.location.href = 'tel:120');
+        // 备忘录
+        document.getElementById('saveMemo')?.addEventListener('click', () => { saveSettings(); speak("备忘录已保存"); });
+
+        // 公园导航
+        document.getElementById('startParkNav')?.addEventListener('click', async () => {
+            let park = await searchNearby("公园");
+            if (park) {
+                startNavigation(park, 'walking');
+                document.getElementById('parkCamera').style.display = 'block';
+            } else speak("附近未找到公园");
+        });
+        document.getElementById('stopParkNav')?.addEventListener('click', stopNavigation);
+
+        // 附近分类
+        const categories = ['超市', '便利店', '农贸市场', '服装店', '学校', '公司', '家'];
+        const catsDiv = document.getElementById('nearbyCategories');
+        if (catsDiv) {
+            categories.forEach(cat => {
+                let btn = document.createElement('button');
+                btn.innerText = cat;
+                btn.addEventListener('click', async () => {
+                    let place = await searchNearby(cat);
+                    if (place) {
+                        speak(`找到最近的${cat}：${place.name}`);
+                        startNavigation(place, 'walking');
+                        document.getElementById('nearbyCamera').style.display = 'block';
+                    } else speak(`附近未找到${cat}`);
+                });
+                catsDiv.appendChild(btn);
+            });
+        }
+        document.getElementById('startNearbyNav')?.addEventListener('click', () => {
+            if (currentDestination) startNavigation(currentDestination, 'walking');
+            else speak("请先选择一个地点");
+        });
+        document.getElementById('stopNearbyNav')?.addEventListener('click', stopNavigation);
+
+        // 公交模式（四种出行方式）
+        const modes = [
+            { id: 'subwayBtn', mode: 'transit', name: '地铁' },
+            { id: 'busBtn', mode: 'transit', name: '公交车' },
+            { id: 'bikeBtn', mode: 'bicycling', name: '骑行' },
+            { id: 'walkBtn', mode: 'walking', name: '步行' }
+        ];
+        modes.forEach(m => {
+            document.getElementById(m.id)?.addEventListener('click', async () => {
+                let dest = await searchNearby("公交站"); // 示例：默认找公交站，实际可改为地铁站等
+                if (dest) {
+                    startNavigation(dest, m.mode);
+                    document.getElementById('busCamera').style.display = 'block';
+                } else speak(`附近未找到${m.name}站`);
+            });
+        });
+        document.getElementById('startBusNav')?.addEventListener('click', () => {
+            if (currentDestination) startNavigation(currentDestination, 'walking');
+            else speak("请先选择出行方式");
+        });
+        document.getElementById('stopBusNav')?.addEventListener('click', stopNavigation);
+
+        // 问题页面（简单帮助指引）
+        document.querySelectorAll('[data-problem]').forEach(el => {
+            el.addEventListener('click', () => {
+                let problem = el.dataset.problem;
+                if (problem === 'nav') speak("点击出游模块，选择公园或附近地点，再点击开始导航即可。");
+                else if (problem === 'location') speak("请确保手机GPS已开启，并在浏览器中允许位置权限。");
+                else if (problem === 'voice') speak("请检查手机音量设置，并在设置中调节语音音量。");
+                else if (problem === 'home') speak("您可以在设置中保存家庭地址，然后点击出游->附近->家来导航回家。");
+                else speak("请查看设置中的帮助与建议，或联系客服。");
+            });
+        });
+
+        // 其他页面简单提示
+        document.querySelectorAll('[data-other]').forEach(el => {
+            el.addEventListener('click', () => alert("功能开发中，敬请期待"));
+        });
+    }
+
+    // 免责声明处理
+    const disclaimerOverlay = document.getElementById('disclaimerOverlay');
+    const appContainer = document.getElementById('appContainer');
+    function showApp() {
+        disclaimerOverlay.style.display = 'none';
+        appContainer.style.display = 'block';
+        localStorage.setItem('disclaimerAccepted', 'true');
+        // 初始化应用
+        loadSettings();
+        getCurrentLocation(() => {});
+        bindEvents();
+        // 预加载语音
+        speechSynthesis.onvoiceschanged = () => {};
+    }
+    function rejectApp() {
+        disclaimerOverlay.innerHTML = '<div style="background:white; padding:40px; border-radius:40px; text-align:center;"><div>您已拒绝免责声明，本软件无法使用。</div><button onclick="location.reload()" style="margin-top:20px;">重新尝试</button></div>';
+    }
+    if (localStorage.getItem('disclaimerAccepted') === 'true') {
+        showApp();
+    } else {
+        document.getElementById('agreeDisclaimer').addEventListener('click', showApp);
+        document.getElementById('rejectDisclaimer').addEventListener('click', rejectApp);
+    }
 </script>
 </body>
 </html>
