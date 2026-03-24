@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle fill='%23F8C86E' cx='50' cy='50' r='50'/%3E%3Ctext x='50' y='70' font-size='50' text-anchor='middle' fill='white'%3E🚶%3C/text%3E%3C/svg%3E">
+    <title>安心行 · 智能老年助手</title>
+    <style>
+        /* 样式与之前一致，此处省略（实际使用时完整保留） */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root { --bg-color: #F8C86E; --card-bg: #ffffff; --text-color: #333; --btn-bg: #F8C86E; --btn-text: #333; }
+        body.dark { --bg-color: #2c3e2f; --card-bg: #3a4e3d; --text-color: #f5f5f5; --btn-bg: #d68b2c; --btn-text: white; }
+        body { background: var(--bg-color); color: var(--text-color); font-family: system-ui, 'Segoe UI', 'PingFang SC', Roboto, Helvetica, Arial, sans-serif; transition: background 0.3s; padding: 0; margin: 0; }
+        .grid-main { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; height: 100vh; gap: 2px; background: #b87c3a; }
+        .main-block { background: var(--card-bg); display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: 0.1s; font-size: 28px; font-weight: bold; text-align: center; padding: 20px; }
+        .main-block:active { transform: scale(0.98); }
+        .main-block .icon { font-size: 64px; margin-bottom: 16px; }
+        .main-block.settings { background: #f2e0c0; }
+        body.dark .main-block.settings { background: #5a6e55; }
+        .page { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-color); overflow-y: auto; padding: 20px; z-index: 10; }
+        .page.active { display: block; }
+        .back-btn { background: var(--btn-bg); border: none; border-radius: 40px; padding: 12px 24px; font-size: 24px; font-weight: bold; color: var(--btn-text); margin-bottom: 20px; cursor: pointer; }
+        .list-item { background: var(--card-bg); border-radius: 40px; padding: 20px; margin-bottom: 16px; font-size: 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .slider { width: 100%; margin: 12px 0; }
+        .voice-option { display: flex; gap: 20px; margin: 12px 0; }
+        .voice-option button { flex: 1; padding: 16px; border-radius: 40px; border: none; background: var(--btn-bg); font-size: 24px; }
+        textarea { width: 100%; padding: 20px; font-size: 24px; border-radius: 40px; border: 1px solid #ccc; background: white; margin-top: 12px; }
+        .map-container { width: 100%; height: 300px; background: #ccc; border-radius: 40px; margin: 12px 0; overflow: hidden; }
+        .camera-container { width: 100%; height: 200px; background: black; border-radius: 40px; margin: 12px 0; position: relative; overflow: hidden; }
+        video { width: 100%; height: 100%; object-fit: cover; }
+        .ai-msg { background: var(--card-bg); border-radius: 40px; padding: 20px; margin: 12px 0; font-size: 24px; text-align: center; }
+        button { background: var(--btn-bg); border: none; border-radius: 40px; padding: 12px 20px; font-size: 24px; color: var(--btn-text); cursor: pointer; }
+        .flex { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
+        .flex button { flex: 1; }
+        .danger-btn { background: #e63946; color: white; }
+        .disclaimer-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 10000; display: flex; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(4px); }
+        .disclaimer-card { background: white; border-radius: 48px; max-width: 600px; width: 100%; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; }
+        .disclaimer-header { background: #F8C86E; padding: 20px; text-align: center; font-size: 28px; font-weight: bold; }
+        .disclaimer-content { flex: 1; overflow-y: auto; padding: 20px; font-size: 18px; line-height: 1.5; }
+        .disclaimer-footer { padding: 20px; display: flex; gap: 16px; }
+        .disclaimer-footer button { flex: 1; padding: 14px; border-radius: 40px; font-size: 20px; font-weight: bold; }
+        .btn-agree { background: #4caf50; color: white; }
+        .btn-reject { background: #f44336; color: white; }
+    </style>
+</head>
+<body>
+
+<!-- 免责声明遮罩层（与之前相同，此处省略，实际需完整保留） -->
+<div id="disclaimerOverlay" class="disclaimer-overlay">...</div>
+<div id="appContainer" style="display: none;">
+    <!-- 四大模块等页面内容与之前完全一致，但为了节省篇幅，此处省略（实际使用时必须包含所有页面结构） -->
+    <!-- 注意：需要在底部添加 AI 助手专属的聊天界面吗？我们直接在“问题”页面的“呼叫AI助手”中实现全语音交互，不需要额外界面 -->
+</div>
+
+<script>
+    // ==================== API 密钥（请替换） ====================
+    const AMAP_KEY = "	8a7b71a39524584f8e9d5a00d695b5f8";
+    const BAIDU_API_KEY = "kglC5NXFftpXpQDA52m2uPnB";
+    const BAIDU_SECRET_KEY = "Y7pJPid83DCGig83SUrkJpgQcPyDbXtG";
+    const DEEPSEEK_API_KEY = "sk-14752d0563804fe8a470372e820e1077";  // 新增：DeepSeek API Key
+    // ===========================================================
+
+    // 全局变量（原有）
+    let currentLocation = null, currentAddress = "", isNavigating = false, currentDestination = null;
+    let voiceVolume = 60, voiceGender = "female", fontSize = 32, nightMode = false;
+    let speechSynthesis = window.speechSynthesis;
+    let currentUtterance = null;
+
+    // AI 对话上下文（保留最近5条）
+    let conversationHistory = [];
+
+    // 系统提示（角色设定）
+    const SYSTEM_PROMPT = `你是一个老年出行助手，名字叫小安，语气温柔耐心，帮助老人规划路线、解答问题。
+当用户表达想去某地时，你需要用特定格式输出导航指令，格式为：[NAVIGATE:目的地名称]。
+例如：用户说“我想去最近的超市”，你回复：“好的，我帮您找附近的超市。[NAVIGATE:超市]”
+如果用户没有说具体地点，你可以询问：“您想去哪里呢？”
+其他日常问题正常回答。`;
+
+    // 调用 DeepSeek API 获取回复
+    async function callDeepSeek(userMessage) {
+        // 构建消息历史（保留最近5轮，节约token）
+        let messages = [
+            { role: "system", content: SYSTEM_PROMPT },
+            ...conversationHistory.slice(-5),
+            { role: "user", content: userMessage }
+        ];
+        const url = "https://api.deepseek.com/v1/chat/completions";
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${DEEPSEEK_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: "deepseek-chat",
+                    messages: messages,
+                    temperature: 0.7,
+                    max_tokens: 300
+                })
+            });
+            const data = await response.json();
+            if (data.choices && data.choices[0]) {
+                let reply = data.choices[0].message.content;
+                // 保存到历史
+                conversationHistory.push({ role: "user", content: userMessage });
+                conversationHistory.push({ role: "assistant", content: reply });
+                return reply;
+            } else {
+                console.error("DeepSeek返回错误", data);
+                return "抱歉，我现在有点忙，请稍后再试。";
+            }
+        } catch (err) {
+            console.error("DeepSeek调用失败", err);
+            return "网络连接有问题，请检查网络后重试。";
+        }
+    }
+
+    // 解析回复中的导航指令
+    function parseNavigationCommand(reply) {
+        const match = reply.match(/\\[NAVIGATE:(.*?)\\]/);
+        if (match) {
+            let dest = match[1].trim();
+            return dest;
+        }
+        return null;
+    }
+
+    // 执行导航（根据目的地文本搜索并开始导航）
+    async function executeNavigation(destinationText) {
+        speak(`正在帮您查找${destinationText}`);
+        // 先尝试直接搜索周边
+        let place = await searchNearby(destinationText);
+        if (!place) {
+            // 如果没找到，尝试地理编码（用户可能输入具体地址）
+            let geo = await geocode(destinationText);
+            if (geo) place = geo;
+        }
+        if (place) {
+            startNavigation(place, 'walking');
+        } else {
+            speak(`抱歉，没有找到${destinationText}，请换个说法试试`);
+        }
+    }
+
+    // 语音识别 + AI对话主流程
+    async function startAIDialog() {
+        speak("您好，我是小安，请问有什么可以帮您？");
+        // 开始语音识别
+        if (!('webkitSpeechRecognition' in window)) {
+            speak("您的浏览器不支持语音输入");
+            return;
+        }
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'zh-CN';
+        recognition.interimResults = false;
+        recognition.start();
+        recognition.onresult = async (event) => {
+            let userText = event.results[0][0].transcript;
+            speak("我听到了：" + userText);
+            // 调用DeepSeek
+            let aiReply = await callDeepSeek(userText);
+            // 检查是否有导航指令
+            let dest = parseNavigationCommand(aiReply);
+            if (dest) {
+                // 去除指令部分，只播报文本
+                let cleanReply = aiReply.replace(/\\[NAVIGATE:.*?\\]/, "").trim();
+                if (cleanReply) speak(cleanReply);
+                await executeNavigation(dest);
+            } else {
+                speak(aiReply);
+            }
+        };
+        recognition.onerror = () => {
+            speak("抱歉，我没听清楚，请再说一遍");
+        };
+    }
+
+    // 以下是原有功能函数（保持不变，但需确保 searchNearby、geocode、startNavigation 等已定义）
+    // 由于篇幅，这里只列出函数签名，实际需完整保留之前版本的所有函数。
+    // 注意：需要补充 geocode 函数（地址转坐标）和 searchNearby 等。
+
+    // 示例：geocode（高德地理编码）
+    async function geocode(address) {
+        if (!currentLocation) await new Promise(resolve => getCurrentLocation(resolve));
+        let url = `https://restapi.amap.com/v3/geocode/geo?address=${encodeURIComponent(address)}&key=${AMAP_KEY}&output=json`;
+        let res = await fetch(url);
+        let data = await res.json();
+        if (data.status === '1' && data.geocodes && data.geocodes.length) {
+            let loc = data.geocodes[0].location.split(',');
+            return { name: data.geocodes[0].formatted_address, lng: parseFloat(loc[0]), lat: parseFloat(loc[1]) };
+        }
+        return null;
+    }
+
+    // 其他函数（getCurrentLocation, searchNearby, planRoute, startNavigation, speak, etc.）与之前相同，此处省略
+    // 实际使用时需完整粘贴之前的全部函数实现，避免功能缺失。
+
+    // 初始化时绑定“呼叫AI助手”按钮
+    function bindAIButton() {
+        const aiBtn = document.getElementById('callAI');
+        if (aiBtn) {
+            aiBtn.addEventListener('click', startAIDialog);
+        }
+    }
+
+    // 页面加载完成后调用
+    window.onload = () => {
+        // 免责声明逻辑（略）
+        // 初始化设置、定位等...
+        bindAIButton();
+    };
+</script>
+</body>
+</html>
